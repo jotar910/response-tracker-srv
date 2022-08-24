@@ -1,0 +1,17 @@
+{
+  "name": "response-tracker",
+  "version": "0.0.1",
+  "description": "Server for the Response Tracker extension",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "nodemon src/index.js"
+  },
+  "author": "João Rodrigues",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  },
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
