@@ -1,7 +1,7 @@
-const fs = require('fs');
+const fs = require("fs");
 const https = require("https");
 const express = require("express");
-const URL = require('url');
+const URL = require("url");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,12 +21,20 @@ https
     console.log("Server started on port " + port);
   });
 
-app.route("/").get(handleRedirect).options(handleOptions);
+app
+  .route("/")
+  .get(handleRedirect)
+  .post(handleRedirect)
+  .patch(handleRedirect)
+  .put(handleRedirect)
+  .delete(handleRedirect)
+  .head(handleOptions)
+  .options(handleOptions);
 app.route("/health").get(handleHealth);
 
 function handleRedirect(req, res) {
   const definition = req.get("X-Definition");
-  const body = definition ? JSON.parse(definition) : '{}';
+  const body = definition ? JSON.parse(definition) : "{}";
   const url = URL.parse(req.param("from"));
 
   for (const { name, value } of req.cookies || []) {
@@ -35,21 +43,24 @@ function handleRedirect(req, res) {
 
   res
     .status(+body.status || 200)
-    .set({ "Access-Control-Allow-Origin": url.protocol + "//" + url.host })
+    .set({ "Access-Control-Allow-Origin": "*" })
     .set(body.headers || {})
-    .json(JSON.parse(body.response) || '');
+    .json(JSON.parse(body.response) || "");
 }
 
 function handleOptions(req, res) {
   const requestedHeaders = req.get("Access-Control-Request-Headers");
-  const allowHeaders = "Content-Type, Origin, Accept, X-Definition" + (requestedHeaders ? ", " + requestedHeaders : "");
+  const allowHeaders =
+    "Content-Type, Origin, Accept, X-Definition" +
+    (requestedHeaders ? ", " + requestedHeaders : "");
   const url = URL.parse(req.param("from"));
   res
     .set({
-      "Vary": "Origin",
+      Vary: "Origin",
       "Access-Control-Expose-Headers": "X-Definition",
       "Access-Control-Allow-Origin": url.protocol + "//" + url.host,
-      "Access-Control-Allow-Methods": "GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD",
+      "Access-Control-Allow-Methods":
+        "GET, POST, PATCH, PUT, DELETE, OPTIONS, HEAD",
       "Access-Control-Allow-Headers": allowHeaders,
     })
     .sendStatus(200);
